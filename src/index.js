@@ -69,15 +69,23 @@ function createJsonFile(targetPath, data){
 
 
 
-function loadDataFromFile(targetPath){
-    return data = null;
-    // TODO: load data from file
-    // Reading data takes time
-    // promises or async/wait
+async function loadDataFromFile(targetPath){
+    let data = null;
+
+    let doesFileExist = await doesFileExistAsync(targetPath);
+    if (doesFileExist){
+        data = await fsPromises.readFile(targetPath, { encoding: 'utf8' });
+        data = JSON.parse(data);
+    }
+   
+    return data;
 
 }
 
-
+(async () => {
+    let fileData = await loadDataFromFile("./pokemonStats.json");
+    console.log(fileData);
+})();
 
 function saveDataToFile(targetPath, data){
     // TODO - write data to JSON file
