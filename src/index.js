@@ -1,18 +1,49 @@
 
 // const fs = require("node:fs");    // - this syntax did not work
-const fs = require('fs');
+const fs = require("node:fs");
+const fsPromises = require('node:fs/promises');
 
-console.log("Promise output:" + doesFileExist("../pokemonStats.json"));
+
+
+console.log("Promise output:" + doesFileExistPromise("./pokemonStats.json"));
 console.log("Sync output:" + doesFileExistSync("./pokemonStats.json"));
 
-function doesFileExist(targetPath){
+(async () => {
+    let asyncResult = await doesFileExistAsync("./pokemonStats.json");
+    console.log("Async output:" + asyncResult.size);
+})();
+
+
+async function doesFileExistAsync(targetPath){
+    return await fsPromises.stat(targetPath);
+    // let result = false;
+    // result = await fsPromises.stat(targetPath);
+    // return result;
+}
+
+function doesFileExistPromise(targetPath){
     let result = false;
 
-    fs.exists(targetPath, (existsResult) => {
-        result = existsResult;
+    return new Promise((resolve, reject) => {
+        fsPromises.stat(targetPath).then(statData => {
+            if (statData.size || statData.birthtimeMs) {
+                result = true;
+                console.log(result);
+                resolve(result);
+            } else {
+                resolve(result);
+            }
+        }).catch(error => {
+            reject(error);
+        })
+
     });
 
-    return result;
+
+    // fs.exists(targetPath, (existsResult) => {
+    //     result = existsResult;
+    // });
+    // return result;
 }
 
 function doesFileExistSync(targetPath){
